@@ -11,6 +11,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
           id: "1",
           name: "Администратор",
           email: "admin@example.com",
+          status: 'active',
           role: "admin",
         })
       } else if (email === "manager@example.com" && password === "password") {
@@ -18,7 +19,8 @@ export const loginUser = async (email: string, password: string): Promise<User> 
           id: "2",
           name: "Менеджер",
           email: "manager@example.com",
-          role: "manager",
+          status: 'active',
+          role: "manager"
         })
       } else {
         reject(new Error("Неверные учетные данные"))

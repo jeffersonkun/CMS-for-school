@@ -1,4 +1,4 @@
-import type { Chat } from "@/types/product.types"; // предполагаем, что ты выделил типы
+import type { Chat } from "@/types/product.types";
 
 export const fetchChats = async (): Promise<Chat[]> => {
   return new Promise((resolve) => {
