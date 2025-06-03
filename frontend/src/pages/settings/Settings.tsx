@@ -1,15 +1,15 @@
-import { useState } from "react"
-import { useStore } from "@/store"
-import { useTheme } from "@/context/ThemeContext"
-import ProfileSettings from "./components/ProfileSettings"
-import SecuritySettings from "./components/SecuritySettings"
-import NotificationSettings from "./components/NotificationSettings"
-import "./Settings.scss"
+import { useState } from "react";
+import { useStore } from "@/store";
+import { useTheme } from "@/context/ThemeContext";
+import ProfileSettings from "./components/ProfileSettings";
+import SecuritySettings from "./components/SecuritySettings";
+import NotificationSettings from "./components/NotificationSettings";
+import "./Settings.scss";
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("profile")
-  const { user } = useStore()
-  const { theme, toggleTheme } = useTheme()
+  const [activeTab, setActiveTab] = useState("profile");
+  const { user } = useStore();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="settings">
@@ -21,11 +21,9 @@ const Settings = () => {
         <div className="settings__sidebar">
           <div className="settings__user">
             <div className="settings__user-avatar">
-              {user?.avatar ? (
-                <img src={user.avatar || "/placeholder.svg"} alt={user.name} />
-              ) : (
-                <div className="settings__user-avatar-placeholder">{user?.name.charAt(0)}</div>
-              )}
+              <div className="settings__user-avatar-placeholder">
+                {user?.name.charAt(0)}
+              </div>
             </div>
             <div className="settings__user-info">
               <h3 className="settings__user-name">{user?.name}</h3>
@@ -35,19 +33,25 @@ const Settings = () => {
 
           <nav className="settings__nav">
             <button
-              className={`settings__nav-item ${activeTab === "profile" ? "active" : ""}`}
+              className={`settings__nav-item ${
+                activeTab === "profile" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("profile")}
             >
               Профиль
             </button>
             <button
-              className={`settings__nav-item ${activeTab === "security" ? "active" : ""}`}
+              className={`settings__nav-item ${
+                activeTab === "security" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("security")}
             >
               Безопасность
             </button>
             <button
-              className={`settings__nav-item ${activeTab === "notifications" ? "active" : ""}`}
+              className={`settings__nav-item ${
+                activeTab === "notifications" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("notifications")}
             >
               Уведомления
@@ -56,7 +60,10 @@ const Settings = () => {
 
           <div className="settings__theme">
             <span className="settings__theme-label">Тема:</span>
-            <button className="settings__theme-toggle" onClick={toggleTheme}>
+            <button
+              className="settings__theme-toggle"
+              onClick={toggleTheme}
+            >
               {theme === "light" ? "🌙 Тёмная" : "☀️ Светлая"}
             </button>
           </div>
@@ -69,7 +76,7 @@ const Settings = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Settings
+export default Settings;

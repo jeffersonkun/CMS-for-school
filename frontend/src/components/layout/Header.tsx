@@ -41,8 +41,8 @@ const Header = () => {
                 <ul>
                   {notifications.map((notification) => (
                     <li key={notification.id} className="header__notification">
-                      <p className="header__notification-text">{notification.text}</p>
-                      <span className="header__notification-time">{notification.time}</span>
+                      <p className="header__notification-text">{notification.message}</p>
+                      <span className="header__notification-time">{notification.date}</span>
                     </li>
                   ))}
                 </ul>

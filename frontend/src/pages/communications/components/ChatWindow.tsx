@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
 import { getChatById, sendMessage } from "@/api/communications"
+import { Chat } from "@/types/product.types"
 import "./ChatWindow.scss"
 
 interface ChatWindowProps {
@@ -19,7 +20,7 @@ interface Message {
 }
 
 const ChatWindow = ({ chatId }: ChatWindowProps) => {
-  const [chat, setChat] = useState<any>(null)
+  const [chat, setChat] = useState<Chat | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
   const [isLoading, setIsLoading] = useState(true)

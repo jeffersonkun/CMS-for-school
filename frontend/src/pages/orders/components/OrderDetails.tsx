@@ -1,91 +1,100 @@
-import { useState, useEffect } from "react"
-import { getOrderById, updateOrderStatus } from "@/api/orders"
-import "./OrderDetails.scss"
+import { useState, useEffect } from "react";
+import { getOrderById, updateOrderStatus } from "@/api/orders";
+import "./OrderDetails.scss";
+import { Order, OrderItem, OrderStatus } from "@/types/product.types";
 
 interface OrderDetailsProps {
-  orderId: string
-  onClose: () => void
+  orderId: string;
+  onClose: () => void;
 }
 
 const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
-  const [order, setOrder] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [order, setOrder] = useState<Order | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const data = await getOrderById(orderId)
-        setOrder(data)
+        const data = await getOrderById(orderId);
+        setOrder(data);
       } catch (err) {
-        setError("Не удалось загрузить данные заказа")
-        console.error(err)
+        setError("Не удалось загрузить данные заказа");
+        console.error(err);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchOrder()
-  }, [orderId])
+    fetchOrder();
+  }, [orderId]);
 
-  const handleStatusChange = async (newStatus: string) => {
+  const handleStatusChange = async (
+    newStatus: OrderStatus
+  ) => {
+    if (!order) return;
+
     try {
-      await updateOrderStatus(orderId, newStatus)
-      setOrder({ ...order, status: newStatus })
+      await updateOrderStatus();
+      setOrder({ ...order, status: newStatus });
     } catch (err) {
-      setError("Не удалось обновить статус заказа")
+      setError("Не удалось обновить статус заказа");
       console.error(err);
     }
-  }
+  };
+  
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("ru-RU", {
       style: "currency",
       currency: "RUB",
       minimumFractionDigits: 2,
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("ru-RU", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "pending":
-        return "Ожидает"
+        return "Ожидает";
       case "paid":
-        return "Оплачен"
+        return "Оплачен";
       case "shipped":
-        return "Отправлен"
+        return "Отправлен";
       case "delivered":
-        return "Доставлен"
+        return "Доставлен";
       case "cancelled":
-        return "Отменен"
+        return "Отменен";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="order-details">
         <div className="order-details__header">
           <h2 className="order-details__title">Детали заказа</h2>
-          <button className="order-details__close" onClick={onClose}>
+          <button
+            className="order-details__close"
+            onClick={onClose}
+          >
             ✕
           </button>
         </div>
         <div className="order-details__loading">Загрузка данных заказа...</div>
       </div>
-    )
+    );
   }
 
   if (error || !order) {
@@ -93,22 +102,37 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
       <div className="order-details">
         <div className="order-details__header">
           <h2 className="order-details__title">Детали заказа</h2>
-          <button className="order-details__close" onClick={onClose}>
+          <button
+            className="order-details__close"
+            onClick={onClose}
+          >
             ✕
           </button>
         </div>
         <div className="order-details__error">{error || "Заказ не найден"}</div>
       </div>
-    )
+    );
   }
+
+  const isValidStatus = (value: string): value is OrderStatus => {
+    return ["pending", "paid", "shipped", "delivered", "cancelled"].includes(
+      value
+    );
+  };
 
   return (
     <div className="order-details">
       <div className="order-details__header">
         <h2 className="order-details__title">
-          Заказ {order.number} <span className="order-details__date">{formatDate(order.createdAt)}</span>
+          Заказ {order.number}{" "}
+          <span className="order-details__date">
+            {formatDate(order.createdAt)}
+          </span>
         </h2>
-        <button className="order-details__close" onClick={onClose}>
+        <button
+          className="order-details__close"
+          onClick={onClose}
+        >
           ✕
         </button>
       </div>
@@ -117,12 +141,19 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
         <div className="order-details__section">
           <h3 className="order-details__section-title">Статус заказа</h3>
           <div className="order-details__status-wrapper">
-            <div className={`order-details__status status-${order.status}`}>{getStatusLabel(order.status)}</div>
+            <div className={`order-details__status status-${order.status}`}>
+              {getStatusLabel(order.status)}
+            </div>
             <div className="order-details__status-actions">
               <select
                 className="order-details__status-select"
                 value={order.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (isValidStatus(value)) {
+                    handleStatusChange(value);
+                  }
+                }}
               >
                 <option value="pending">Ожидает</option>
                 <option value="paid">Оплачен</option>
@@ -138,11 +169,19 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
         <div className="order-details__columns">
           <div className="order-details__column">
             <div className="order-details__section">
-              <h3 className="order-details__section-title">Информация о клиенте</h3>
+              <h3 className="order-details__section-title">
+                Информация о клиенте
+              </h3>
               <div className="order-details__customer">
-                <p className="order-details__customer-name">{order.customer.name}</p>
-                <p className="order-details__customer-email">{order.customer.email}</p>
-                <p className="order-details__customer-phone">{order.customer.phone}</p>
+                <p className="order-details__customer-name">
+                  {order.customer.name}
+                </p>
+                <p className="order-details__customer-email">
+                  {order.customer.email}
+                </p>
+                <p className="order-details__customer-phone">
+                  {order.customer.phone}
+                </p>
               </div>
             </div>
 
@@ -192,7 +231,7 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
                 </tr>
               </thead>
               <tbody>
-                {order.items.map((item: any) => (
+                {order.items.map((item: OrderItem) => (
                   <tr key={item.id}>
                     <td>{item.productName}</td>
                     <td>{formatPrice(item.price)}</td>
@@ -207,11 +246,13 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
 
         <div className="order-details__actions">
           <button className="order-details__action-button">Печать</button>
-          <button className="order-details__action-button">Отправить чек</button>
+          <button className="order-details__action-button">
+            Отправить чек
+          </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default OrderDetails
+export default OrderDetails;

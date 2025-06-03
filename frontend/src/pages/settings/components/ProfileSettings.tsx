@@ -57,23 +57,30 @@ const ProfileSettings = () => {
       <div className="profile-settings__header">
         <h2 className="profile-settings__title">Настройки профиля</h2>
         {!isEditing && (
-          <button className="profile-settings__edit-button" onClick={handleEdit}>
+          <button
+            className="profile-settings__edit-button"
+            onClick={handleEdit}
+          >
             Редактировать
           </button>
         )}
       </div>
 
-      <form className="profile-settings__form" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="profile-settings__form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="profile-settings__avatar">
           <div className="profile-settings__avatar-image">
-            {user?.avatar ? (
-              <img src={user.avatar || "/placeholder.svg"} alt={user.name} />
-            ) : (
-              <div className="profile-settings__avatar-placeholder">{user?.name.charAt(0)}</div>
-            )}
+            <div className="profile-settings__avatar-placeholder">
+              {user?.name.charAt(0)}
+            </div>
           </div>
           {isEditing && (
-            <button type="button" className="profile-settings__avatar-button">
+            <button
+              type="button"
+              className="profile-settings__avatar-button"
+            >
               Изменить фото
             </button>
           )}
@@ -86,10 +93,16 @@ const ProfileSettings = () => {
               <>
                 <input
                   type="text"
-                  className={`profile-settings__input ${errors.name ? "profile-settings__input--error" : ""}`}
+                  className={`profile-settings__input ${
+                    errors.name ? "profile-settings__input--error" : ""
+                  }`}
                   {...register("name", { required: "Имя обязательно" })}
                 />
-                {errors.name && <p className="profile-settings__error">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="profile-settings__error">
+                    {errors.name.message}
+                  </p>
+                )}
               </>
             ) : (
               <p className="profile-settings__value">{user?.name}</p>
@@ -102,7 +115,9 @@ const ProfileSettings = () => {
               <>
                 <input
                   type="email"
-                  className={`profile-settings__input ${errors.email ? "profile-settings__input--error" : ""}`}
+                  className={`profile-settings__input ${
+                    errors.email ? "profile-settings__input--error" : ""
+                  }`}
                   {...register("email", {
                     required: "Email обязателен",
                     pattern: {
@@ -111,7 +126,11 @@ const ProfileSettings = () => {
                     },
                   })}
                 />
-                {errors.email && <p className="profile-settings__error">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="profile-settings__error">
+                    {errors.email.message}
+                  </p>
+                )}
               </>
             ) : (
               <p className="profile-settings__value">{user?.email}</p>
@@ -124,10 +143,16 @@ const ProfileSettings = () => {
               <>
                 <input
                   type="tel"
-                  className={`profile-settings__input ${errors.phone ? "profile-settings__input--error" : ""}`}
+                  className={`profile-settings__input ${
+                    errors.phone ? "profile-settings__input--error" : ""
+                  }`}
                   {...register("phone")}
                 />
-                {errors.phone && <p className="profile-settings__error">{errors.phone.message}</p>}
+                {errors.phone && (
+                  <p className="profile-settings__error">
+                    {errors.phone.message}
+                  </p>
+                )}
               </>
             ) : (
               <p className="profile-settings__value">+7 (999) 123-45-67</p>
@@ -140,10 +165,16 @@ const ProfileSettings = () => {
               <>
                 <input
                   type="text"
-                  className={`profile-settings__input ${errors.position ? "profile-settings__input--error" : ""}`}
+                  className={`profile-settings__input ${
+                    errors.position ? "profile-settings__input--error" : ""
+                  }`}
                   {...register("position")}
                 />
-                {errors.position && <p className="profile-settings__error">{errors.position.message}</p>}
+                {errors.position && (
+                  <p className="profile-settings__error">
+                    {errors.position.message}
+                  </p>
+                )}
               </>
             ) : (
               <p className="profile-settings__value">Менеджер</p>
@@ -155,22 +186,38 @@ const ProfileSettings = () => {
             {isEditing ? (
               <>
                 <textarea
-                  className={`profile-settings__textarea ${errors.bio ? "profile-settings__textarea--error" : ""}`}
+                  className={`profile-settings__textarea ${
+                    errors.bio ? "profile-settings__textarea--error" : ""
+                  }`}
                   {...register("bio")}
                 />
-                {errors.bio && <p className="profile-settings__error">{errors.bio.message}</p>}
+                {errors.bio && (
+                  <p className="profile-settings__error">
+                    {errors.bio.message}
+                  </p>
+                )}
               </>
             ) : (
-              <p className="profile-settings__value">Менеджер по продажам с опытом работы более 5 лет.</p>
+              <p className="profile-settings__value">
+                Менеджер по продажам с опытом работы более 5 лет.
+              </p>
             )}
           </div>
 
           {isEditing && (
             <div className="profile-settings__actions">
-              <button type="button" className="profile-settings__cancel-button" onClick={handleCancel}>
+              <button
+                type="button"
+                className="profile-settings__cancel-button"
+                onClick={handleCancel}
+              >
                 Отмена
               </button>
-              <button type="submit" className="profile-settings__save-button" disabled={isSaving}>
+              <button
+                type="submit"
+                className="profile-settings__save-button"
+                disabled={isSaving}
+              >
                 {isSaving ? "Сохранение..." : "Сохранить"}
               </button>
             </div>
@@ -178,7 +225,7 @@ const ProfileSettings = () => {
         </div>
       </form>
     </div>
-  )
+  );
 }
 
 export default ProfileSettings

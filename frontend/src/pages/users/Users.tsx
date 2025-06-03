@@ -46,25 +46,40 @@ const Users = () => {
     <div className="users">
       <div className="users__header">
         <h1 className="users__title">Пользователи и роли</h1>
-        <button className="users__add-button" onClick={handleAddUser}>
+        <button
+          className="users__add-button"
+          onClick={handleAddUser}
+        >
           Добавить пользователя
         </button>
       </div>
 
       <div className="users__content">
-        <UserTable users={users} onEditUser={handleEditUser} />
+        {users && (
+          <UserTable
+            users={users}
+            onEditUser={handleEditUser}
+          />
+        )}
       </div>
 
       {showAddUser && (
         <div className="users__modal">
-          <div className="users__modal-backdrop" onClick={handleCloseForm}></div>
+          <div
+            className="users__modal-backdrop"
+            onClick={handleCloseForm}
+          ></div>
           <div className="users__modal-content">
-            <UserForm userId={selectedUser} onSave={handleUserSaved} onCancel={handleCloseForm} />
+            <UserForm
+              userId={selectedUser}
+              onSave={handleUserSaved}
+              onCancel={handleCloseForm}
+            />
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default Users

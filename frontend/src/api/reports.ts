@@ -1,5 +1,7 @@
+import { ReportData } from "@/types/report.types"
+
 // Mock API function for reports
-export const fetchReportData = async (reportType: string, dateRange: string, startDate?: string, endDate?: string) => {
+export const fetchReportData = async (reportType: string) : Promise<ReportData> => {
   // In a real app, this would be an API call with proper parameters
   return new Promise((resolve) => {
     setTimeout(() => {

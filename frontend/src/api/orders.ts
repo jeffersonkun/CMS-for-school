@@ -178,7 +178,7 @@ export const getOrderById = async (orderId: string): Promise<Order> => {
   // In a real app, this would be an API call
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const orders = [
+      const orders: Order[] = [
         {
           id: "1",
           number: "#3245",
@@ -354,7 +354,7 @@ export const getOrderById = async (orderId: string): Promise<Order> => {
   })
 }
 
-export const updateOrderStatus = async (orderId: string, status: string): Promise<{ success: boolean }> => {
+export const updateOrderStatus = async (): Promise<{ success: boolean }> => {
   // In a real app, this would be an API call
   return new Promise((resolve) => {
     setTimeout(() => {

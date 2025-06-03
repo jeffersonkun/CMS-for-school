@@ -1,5 +1,7 @@
+import { Dashboard } from "@/types/product.types"
+
 // Mock API function for dashboard data
-export const fetchDashboardData = async () => {
+export const fetchDashboardData = async () : Promise<Dashboard> => {
   // In a real app, this would be an API call
   return new Promise((resolve) => {
     setTimeout(() => {

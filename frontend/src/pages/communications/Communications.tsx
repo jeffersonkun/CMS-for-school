@@ -53,7 +53,7 @@ const Communications = () => {
               {chatsLoading ? (
                 <div className="communications__loading">Загрузка чатов...</div>
               ) : (
-                <ChatList chats={chats} selectedChat={selectedChat} onSelectChat={handleChatSelect} />
+                  chats ? <ChatList chats={chats} selectedChat={selectedChat} onSelectChat={handleChatSelect} /> : 'Нет чатов'
               )}
             </div>
             <div className="communications__main">
@@ -71,7 +71,7 @@ const Communications = () => {
             {notificationsLoading ? (
               <div className="communications__loading">Загрузка уведомлений...</div>
             ) : (
-              <NotificationList notifications={notifications} />
+              notifications && <NotificationList notifications={notifications} />
             )}
           </div>
         )}

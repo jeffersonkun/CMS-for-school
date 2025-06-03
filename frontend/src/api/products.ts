@@ -95,7 +95,7 @@ export const getProductById = async (productId: string): Promise<Product> => {
   // In a real app, this would be an API call
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const products = [
+      const products: Product[] = [
         {
           id: "1",
           name: "Молоко 3.2%",
