@@ -67,7 +67,7 @@ const ChatWindow = ({ chatId }: ChatWindowProps) => {
     setNewMessage("")
 
     try {
-      const sentMessage = await sendMessage(chatId, newMessage)
+      const sentMessage = await sendMessage(newMessage)
       setMessages((prev) => prev.map((msg) => (msg.id === tempId ? sentMessage : msg)))
     } catch (error) {
       console.error("Error sending message:", error)

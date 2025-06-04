@@ -1,13 +1,5 @@
 import "./UserTable.scss"
-
-interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-  status: "active" | "inactive" | "blocked"
-  lastActive: string
-}
+import { User } from "@/types/product.types"
 
 interface UserTableProps {
   users: User[]
