@@ -10,11 +10,13 @@ interface Product {
 }
 
 interface ProductTableProps {
-  products: Product[]
-  onEditProduct: (productId: string) => void
+  products: Product[];
+  onEditProduct: (productId: string) => void;
+  onDeleteProduct: (productId: string) => void;
 }
 
-const ProductTable = ({ products, onEditProduct }: ProductTableProps) => {
+
+const ProductTable = ({ products, onEditProduct, onDeleteProduct }: ProductTableProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("ru-RU", {
       style: "currency",
@@ -50,15 +52,29 @@ const ProductTable = ({ products, onEditProduct }: ProductTableProps) => {
               <td>{product.category}</td>
               <td>{formatPrice(product.price)}</td>
               <td>
-                <span className={`product-table__stock ${getStockClass(product.stock)}`}>{product.stock}</span>
+                <span
+                  className={`product-table__stock ${getStockClass(
+                    product.stock
+                  )}`}
+                >
+                  {product.stock}
+                </span>
               </td>
               <td>
                 <div className="product-table__actions">
-                  <button className="product-table__action-btn" onClick={() => onEditProduct(product.id)}>
+                  <button
+                    className="product-table__action-btn"
+                    onClick={() => onEditProduct(product.id)}
+                  >
                     ✏️
                   </button>
                   <button className="product-table__action-btn">📋</button>
-                  <button className="product-table__action-btn">🗑️</button>
+                  <button
+                    className="product-table__action-btn"
+                    onClick={() => onDeleteProduct(product.id)}
+                  >
+                    🗑️
+                  </button>
                 </div>
               </td>
             </tr>
@@ -66,7 +82,7 @@ const ProductTable = ({ products, onEditProduct }: ProductTableProps) => {
         </tbody>
       </table>
     </div>
-  )
+  );
 }
 
 export default ProductTable

@@ -1,45 +1,62 @@
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { fetchUsers } from "@/api/users"
-import UserTable from "./components/UserTable"
-import UserForm from "./components/UserForm"
-import "./Users.scss"
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUsers, deleteUser, updateUser } from "@/api/users";
+import UserTable from "./components/UserTable";
+import UserForm from "./components/UserForm";
+import "./Users.scss";
 
 const Users = () => {
-  const [showAddUser, setShowAddUser] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<string | null>(null)
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-  const { data: users, isLoading, error, refetch } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
-  })
+  });
 
   const handleAddUser = () => {
-    setSelectedUser(null)
-    setShowAddUser(true)
-  }
+    setSelectedUser(null);
+    setShowAddUser(true);
+  };
 
   const handleEditUser = (userId: string) => {
-    setSelectedUser(userId)
-    setShowAddUser(true)
-  }
+    setSelectedUser(userId);
+    setShowAddUser(true);
+  };
 
   const handleCloseForm = () => {
-    setShowAddUser(false)
-    setSelectedUser(null)
-  }
+    setShowAddUser(false);
+    setSelectedUser(null);
+  };
 
   const handleUserSaved = () => {
-    refetch()
-    handleCloseForm()
-  }
+    refetch();
+    handleCloseForm();
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (confirm("Вы уверены, что хотите удалить пользователя?")) {
+      await deleteUser(userId);
+      refetch();
+    }
+  };
+
+  const handleBlockUser = async (userId: string) => {
+    await updateUser(userId, { status: "blocked" });
+    refetch();
+  };
 
   if (isLoading) {
-    return <div className="loading">Загрузка данных...</div>
+    return <div className="loading">Загрузка данных...</div>;
   }
 
   if (error) {
-    return <div className="error">Ошибка загрузки данных</div>
+    return <div className="error">Ошибка загрузки данных</div>;
   }
 
   return (
@@ -59,6 +76,8 @@ const Users = () => {
           <UserTable
             users={users}
             onEditUser={handleEditUser}
+            onDeleteUser={handleDeleteUser}
+            onBlockUser={handleBlockUser}
           />
         )}
       </div>
@@ -80,6 +99,6 @@ const Users = () => {
       )}
     </div>
   );
-}
+};
 
-export default Users
+export default Users;

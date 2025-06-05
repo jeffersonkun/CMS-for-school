@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Layout from "./components/layout/Layout"
 import Dashboard from "./pages/dashboard/Dashboard"

@@ -1,111 +1,153 @@
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { fetchProducts } from "@/api/products"
-import ProductTable from "./components/ProductTable"
-import ProductForm from "./components/ProductForm"
-import "./Products.scss"
+import { useState } from "react";
+import ProductTable from "./components/ProductTable";
+import ProductForm from "./components/ProductForm";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchProducts, deleteProduct } from "@/api/products";
+import "./Products.scss";
 
 const Products = () => {
-  const [showAddProduct, setShowAddProduct] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("")
+  const [showForm, setShowForm] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const queryClient = useQueryClient();
+
+  // Загрузка списка продуктов
+  const {
+    data: products,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProducts,
-  })
+  });
 
+  // Мутация удаления продукта
+  const deleteMutation = useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: (err) => {
+      console.error("Ошибка при удалении товара:", err);
+    },
+  });
+
+  // Открыть форму для добавления
   const handleAddProduct = () => {
-    setSelectedProduct(null)
-    setShowAddProduct(true)
-  }
+    setSelectedProductId(null);
+    setShowForm(true);
+  };
 
+  // Открыть форму для редактирования
   const handleEditProduct = (productId: string) => {
-    setSelectedProduct(productId)
-    setShowAddProduct(true)
-  }
+    setSelectedProductId(productId);
+    setShowForm(true);
+  };
 
+  // Закрыть форму
   const handleCloseForm = () => {
-    setShowAddProduct(false)
-    setSelectedProduct(null)
-  }
+    setShowForm(false);
+    setSelectedProductId(null);
+  };
 
+  // Обновить список и закрыть форму после сохранения
   const handleProductSaved = () => {
-    refetch()
-    handleCloseForm()
-  }
+    refetch();
+    handleCloseForm();
+  };
 
-  const filteredProducts = data
-    ? data.filter(
+  // Удаление продукта с подтверждением
+  const handleDeleteProduct = (productId: string) => {
+    if (window.confirm("Вы уверены, что хотите удалить этот товар?")) {
+      deleteMutation.mutate(productId);
+    }
+  };
+
+  // Фильтрация продуктов по поиску и категории
+  const filteredProducts = products
+    ? products.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (categoryFilter === "" || product.category === categoryFilter)
       )
-    : []
+    : [];
 
-  const categories = data
-    ? Array.from(new Set(data.map((product) => product.category))).sort()
-    : []
+  // Уникальные категории для фильтра
+  const categories = products
+    ? Array.from(new Set(products.map((p) => p.category))).sort()
+    : [];
 
-  if (isLoading) {
-    return <div className="loading">Загрузка данных...</div>
-  }
-
-  if (error) {
-    return <div className="error">Ошибка загрузки данных</div>
-  }
+  if (isLoading) return <div className="loading">Загрузка данных...</div>;
+  if (error) return <div className="error">Ошибка загрузки данных</div>;
 
   return (
     <div className="products">
       <div className="products__header">
         <h1 className="products__title">Каталог товаров</h1>
-        <button className="products__add-button" onClick={handleAddProduct}>
+        <button
+          className="products__add-button"
+          onClick={handleAddProduct}
+        >
           Добавить товар
         </button>
       </div>
 
       <div className="products__filters">
-        <div className="products__search">
-          <input
-            type="text"
-            placeholder="Поиск товаров..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="products__search-input"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Поиск товаров..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="products__search-input"
+        />
 
-        <div className="products__category-filter">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="products__category-select"
-          >
-            <option value="">Все категории</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="products__category-select"
+        >
+          <option value="">Все категории</option>
+          {categories.map((category) => (
+            <option
+              key={category}
+              value={category}
+            >
+              {category}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="products__content">
-        <ProductTable products={filteredProducts} onEditProduct={handleEditProduct} />
+        <ProductTable
+          products={filteredProducts}
+          onEditProduct={handleEditProduct}
+          onDeleteProduct={handleDeleteProduct}
+        />
       </div>
 
-      {showAddProduct && (
+      {showForm && (
         <div className="products__modal">
-          <div className="products__modal-backdrop" onClick={handleCloseForm}></div>
+          <div
+            className="products__modal-backdrop"
+            onClick={handleCloseForm}
+          ></div>
           <div className="products__modal-content">
-            <ProductForm productId={selectedProduct} onSave={handleProductSaved} onCancel={handleCloseForm} />
+            <ProductForm
+              productId={selectedProductId}
+              onSave={handleProductSaved}
+              onCancel={handleCloseForm}
+            />
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Products
+export default Products;

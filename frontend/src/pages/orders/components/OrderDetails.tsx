@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getOrderById, updateOrderStatus } from "@/api/orders";
 import "./OrderDetails.scss";
 import { Order, OrderItem, OrderStatus } from "@/types/product.types";
@@ -6,12 +7,31 @@ import { Order, OrderItem, OrderStatus } from "@/types/product.types";
 interface OrderDetailsProps {
   orderId: string;
   onClose: () => void;
+  onStatusChange: (orderId: string, newStatus: OrderStatus) => void;
 }
 
-const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
+const OrderDetails = ({
+  orderId,
+  onClose,
+  onStatusChange,
+}: OrderDetailsProps) => {
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const statusMutation = useMutation({
+    mutationFn: ({
+      orderId,
+      newStatus,
+    }: {
+      orderId: string;
+      newStatus: OrderStatus;
+    }) => updateOrderStatus(orderId, newStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -29,28 +49,25 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
     fetchOrder();
   }, [orderId]);
 
-  const handleStatusChange = async (
-    newStatus: OrderStatus
-  ) => {
+  const handleStatusUpdate = async (newStatus: OrderStatus) => {
     if (!order) return;
 
     try {
-      await updateOrderStatus();
+      await statusMutation.mutateAsync({ orderId, newStatus });
       setOrder({ ...order, status: newStatus });
+      onStatusChange(orderId, newStatus);
     } catch (err) {
       setError("Не удалось обновить статус заказа");
       console.error(err);
     }
   };
-  
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("ru-RU", {
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("ru-RU", {
       style: "currency",
       currency: "RUB",
       minimumFractionDigits: 2,
     }).format(price);
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -79,6 +96,9 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
         return status;
     }
   };
+
+  const isValidStatus = (value: string): value is OrderStatus =>
+    ["pending", "paid", "shipped", "delivered", "cancelled"].includes(value);
 
   if (isLoading) {
     return (
@@ -114,12 +134,6 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
     );
   }
 
-  const isValidStatus = (value: string): value is OrderStatus => {
-    return ["pending", "paid", "shipped", "delivered", "cancelled"].includes(
-      value
-    );
-  };
-
   return (
     <div className="order-details">
       <div className="order-details__header">
@@ -151,7 +165,7 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
                 onChange={(e) => {
                   const value = e.target.value;
                   if (isValidStatus(value)) {
-                    handleStatusChange(value);
+                    handleStatusUpdate(value);
                   }
                 }}
               >
@@ -161,7 +175,6 @@ const OrderDetails = ({ orderId, onClose }: OrderDetailsProps) => {
                 <option value="delivered">Доставлен</option>
                 <option value="cancelled">Отменен</option>
               </select>
-              <button className="order-details__status-button">Обновить</button>
             </div>
           </div>
         </div>

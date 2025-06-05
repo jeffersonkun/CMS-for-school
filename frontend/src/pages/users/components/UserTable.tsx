@@ -1,52 +1,59 @@
-import "./UserTable.scss"
-import { User } from "@/types/product.types"
+import "./UserTable.scss";
+import { User } from "@/types/product.types";
 
 interface UserTableProps {
-  users: User[]
-  onEditUser: (userId: string) => void
+  users: User[];
+  onEditUser: (userId: string) => void;
+  onDeleteUser: (userId: string) => void;
+  onBlockUser: (userId: string) => void;
 }
 
-const UserTable = ({ users, onEditUser }: UserTableProps) => {
+const UserTable = ({
+  users,
+  onEditUser,
+  onDeleteUser,
+  onBlockUser,
+}: UserTableProps) => {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case "admin":
-        return "Администратор"
+        return "Администратор";
       case "manager":
-        return "Менеджер"
+        return "Менеджер";
       case "analyst":
-        return "Аналитик"
+        return "Аналитик";
       case "warehouse":
-        return "Склад"
+        return "Склад";
       default:
-        return role
+        return role;
     }
-  }
+  };
 
   const getStatusClass = (status: string) => {
     switch (status) {
       case "active":
-        return "status-active"
+        return "status-active";
       case "inactive":
-        return "status-inactive"
+        return "status-inactive";
       case "blocked":
-        return "status-blocked"
+        return "status-blocked";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "active":
-        return "Активен"
+        return "Активен";
       case "inactive":
-        return "Неактивен"
+        return "Неактивен";
       case "blocked":
-        return "Заблокирован"
+        return "Заблокирован";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   return (
     <div className="user-table">
@@ -68,18 +75,44 @@ const UserTable = ({ users, onEditUser }: UserTableProps) => {
               <td>{user.email}</td>
               <td>{getRoleLabel(user.role)}</td>
               <td>
-                <span className={`user-table__status ${getStatusClass(user.status)}`}>
+                <span
+                  className={`user-table__status ${getStatusClass(
+                    user.status
+                  )}`}
+                >
                   {getStatusLabel(user.status)}
                 </span>
               </td>
               <td>{user.lastActive}</td>
               <td>
                 <div className="user-table__actions">
-                  <button className="user-table__action-btn" onClick={() => onEditUser(user.id)}>
+                  <button
+                    className="user-table__action-btn"
+                    onClick={() => onEditUser(user.id)}
+                    disabled={user.status === "blocked"}
+                    title={
+                      user.status === "blocked"
+                        ? "Пользователь заблокирован"
+                        : "Редактировать"
+                    }
+                  >
                     ✏️
                   </button>
-                  <button className="user-table__action-btn">🔒</button>
-                  <button className="user-table__action-btn">🗑️</button>
+                  <button
+                    className="user-table__action-btn"
+                    onClick={() => onBlockUser(user.id)}
+                    disabled={user.status === "blocked"}
+                    title="Заблокировать"
+                  >
+                    🔒
+                  </button>
+                  <button
+                    className="user-table__action-btn"
+                    onClick={() => onDeleteUser(user.id)}
+                    title="Удалить"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </td>
             </tr>
@@ -87,7 +120,7 @@ const UserTable = ({ users, onEditUser }: UserTableProps) => {
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
-export default UserTable
+export default UserTable;

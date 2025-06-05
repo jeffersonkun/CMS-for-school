@@ -1,72 +1,79 @@
-import "./OrderTable.scss"
+import "./OrderTable.scss";
 
 interface Order {
-  id: string
-  number: string
+  id: string;
+  number: string;
   customer: {
-    name: string
-  }
-  total: number
-  status: string
-  createdAt: string
+    name: string;
+  };
+  total: number;
+  status: string;
+  createdAt: string;
 }
 
 interface OrderTableProps {
-  orders: Order[]
-  onViewOrder: (orderId: string) => void
+  orders: Order[];
+  onViewOrder: (orderId: string) => void;
+  onEditOrder: (orderId: string) => void;
+  onDeleteOrder: (orderId: string) => void;
 }
 
-const OrderTable = ({ orders, onViewOrder }: OrderTableProps) => {
+const OrderTable = ({
+  orders,
+  onViewOrder,
+  onEditOrder,
+  onDeleteOrder,
+}: OrderTableProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("ru-RU", {
       style: "currency",
       currency: "RUB",
       minimumFractionDigits: 2,
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("ru-RU", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const getStatusClass = (status: string) => {
     switch (status) {
       case "pending":
-        return "status-pending"
+        return "status-pending";
       case "paid":
-        return "status-paid"
+        return "status-paid";
       case "shipped":
-        return "status-shipped"
+        return "status-shipped";
       case "delivered":
-        return "status-delivered"
+        return "status-delivered";
       case "cancelled":
-        return "status-cancelled"
+        return "status-cancelled";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "pending":
-        return "Ожидает"
+        return "Ожидает";
       case "paid":
-        return "Оплачен"
+        return "Оплачен";
       case "shipped":
-        return "Отправлен"
+        return "Отправлен";
       case "delivered":
-        return "Доставлен"
+        return "Доставлен";
       case "cancelled":
-        return "Отменен"
+        return "Отменен";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   return (
     <div className="order-table">
@@ -89,17 +96,34 @@ const OrderTable = ({ orders, onViewOrder }: OrderTableProps) => {
               <td>{formatDate(order.createdAt)}</td>
               <td>{formatPrice(order.total)}</td>
               <td>
-                <span className={`order-table__status ${getStatusClass(order.status)}`}>
+                <span
+                  className={`order-table__status ${getStatusClass(
+                    order.status
+                  )}`}
+                >
                   {getStatusLabel(order.status)}
                 </span>
               </td>
               <td>
                 <div className="order-table__actions">
-                  <button className="order-table__action-btn" onClick={() => onViewOrder(order.id)}>
+                  <button
+                    className="order-table__action-btn"
+                    onClick={() => onViewOrder(order.id)}
+                  >
                     👁️
                   </button>
-                  <button className="order-table__action-btn">✏️</button>
-                  <button className="order-table__action-btn">🗑️</button>
+                  <button
+                    className="order-table__action-btn"
+                    onClick={() => onEditOrder(order.id)}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="order-table__action-btn"
+                    onClick={() => onDeleteOrder(order.id)}
+                  >
+                    🗑️
+                  </button>
                 </div>
               </td>
             </tr>
@@ -107,7 +131,7 @@ const OrderTable = ({ orders, onViewOrder }: OrderTableProps) => {
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
-export default OrderTable
+export default OrderTable;
